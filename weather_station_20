@@ -1,0 +1,9 @@
+SET @rowindex:= -1;
+SELECT 
+    ROUND(AVG(sub.LAT_N),4) AS median
+FROM 
+    (SELECT @rowindex:=@rowindex +1 AS rowindex, 
+        STATION.LAT_N AS LAT_N
+    FROM STATION 
+    ORDER BY STATION.LAT_N) AS sub
+WHERE sub.rowindex IN (FLOOR(@rowindex/2), CEIL(@rowindex/2));

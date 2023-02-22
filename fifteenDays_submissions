@@ -1,0 +1,21 @@
+SELECT submission_date,
+
+(SELECT COUNT(DISTINCT hacker_id) FROM Submissions AS s
+    WHERE s.submission_date = sub.submission_date
+    AND (
+        SELECT COUNT(DISTINCT submission_date) FROM Submissions AS ss 
+            WHERE ss.hacker_id = s.hacker_id
+            AND ss.submission_date < sub.submission_date
+    ) = DATEDIFF(sub.submission_date, "2016-03-01")
+        ) AS every_day,
+
+(SELECT hacker_id FROM Submissions AS tmp
+     WHERE tmp.submission_date=sub.submission_date GROUP BY hacker_id
+    ORDER BY COUNT(submission_id) DESC, hacker_id LIMIT 1
+        ) AS top_hacker_id,
+
+(SELECT name FROM Hackers WHERE hacker_id = top_hacker_id
+    ) AS top_hacker_name
+
+FROM (SELECT DISTINCT submission_date FROM Submissions) AS sub
+GROUP BY submission_date

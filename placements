@@ -1,0 +1,7 @@
+SELECT Name FROM Students 
+INNER JOIN Friends ON Students.ID = Friends.ID
+INNER JOIN Packages ON Students.ID = Packages.ID
+WHERE Salary < (SELECT Salary FROM Packages 
+                WHERE Packages.ID  = Friends.Friend_ID)
+ORDER BY (SELECT Salary FROM Packages 
+                WHERE Packages.ID  = Friends.Friend_ID) 

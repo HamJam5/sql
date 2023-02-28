@@ -1,2 +1,3 @@
-# sql
+practicing sql
+
 

@@ -1,0 +1,30 @@
+WITH tot_sub AS (
+    SELECT
+        s.total_submissions
+    FROM Colleges cl
+    INNER JOIN Challenges ch ON cl.college_id = ch.college_id
+    INNER JOIN Submission_Stats s ON ch.challenge_id = s.challenge_id
+)
+
+WITH tot_views AS (
+    SELECT 
+        v.total_views
+    FROM Colleges cl
+    INNER JOIN Challenges ch ON cl.college_id = ch.college_id
+    INNER JOIN View_Stats v ON ch.challenge_id = v.challenge_id
+)
+
+SELECT 
+    cn.contest_id, cn.hacker_id, cn.name,
+    SUM(ts.total_submissions)
+    SUM(tv.total_views)
+FROM Contests cn
+INNER JOIN tot_sub ts ON ts.contest_id = cn.contest_id
+INNER JOIN tot_views tv ON tv.contest_id = cn.contest_id
+GROUP BY cn.contest_id, cn.hacker_id, cn.name
+
+/*
+, s.total_accepted_submissions
+, v.total_unique_views
+ORDER BY cn.contest_id
+*/

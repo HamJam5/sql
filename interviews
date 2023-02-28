@@ -22,14 +22,9 @@ tot_views AS (
 
 SELECT 
     cn.contest_id, cn.hacker_id, cn.name,
-    ts.tsub, ts.tasub,
-    tv.tvs, tv.tuvs
+    ts.tsub, ts.tasub, tv.tvs, tv.tuvs
 FROM Contests cn
 INNER JOIN tot_sub ts ON ts.contest_id = cn.contest_id
 INNER JOIN tot_views tv ON tv.contest_id = cn.contest_id
-GROUP BY cn.contest_id, cn.hacker_id, cn.name
-HAVING SUM(ts.total_submissions) > 0
-    OR SUM(ts.total_accepted_submissions) > 0
-    OR SUM(tv.total_views) > 0
-    OR SUM(tv.total_unique_views) > 0
+WHERE ts.tsub > 0 OR ts.tasub > 0 OR tv.tvs > 0 OR tv.tuvs > 0
 ORDER BY cn.contest_id

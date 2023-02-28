@@ -1,3 +1,5 @@
+#!/usr/bin/env mysqlscript
+
 WITH tot_sub AS (
     SELECT
         s.total_submissions, s.total_accepted_submissions

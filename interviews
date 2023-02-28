@@ -7,9 +7,9 @@ WITH tot_sub AS (
     INNER JOIN Challenges ch ON cl.college_id = ch.college_id
     INNER JOIN Submission_Stats s ON ch.challenge_id = s.challenge_id
     GROUP BY cl.contest_id
-)
+),
 
-WITH tot_views AS (
+tot_views AS (
     SELECT 
         cl.contest_id,
         SUM(v.total_views) AS tvs, 

@@ -1,4 +1,4 @@
-#!/usr/bin/env mysql
+--() { :; }; exec mysql -f "$0"
 
 SET @rowindex:= -1;
 SELECT 

@@ -1,4 +1,4 @@
---() { :; }; exec msql -f "$0"
+--() { :; }; exec psql -f "$0"
 
 SET @rowindex:= -1;
 SELECT 

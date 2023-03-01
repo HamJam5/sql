@@ -1,3 +1,5 @@
+#!/usr/bin/env sql
+
 SET @rowindex:= -1;
 SELECT 
     ROUND(AVG(sub.LAT_N),4) AS median

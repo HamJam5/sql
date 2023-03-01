@@ -1,4 +1,3 @@
---() { :; }; exec psql -f "$0"
 
 SET @rowindex:= -1;
 SELECT 

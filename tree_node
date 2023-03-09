@@ -1,0 +1,10 @@
+SELECT t.id, (
+    CASE
+        WHEN t.p_id IS null
+        THEN 'Root'
+        WHEN EXISTS (SELECT * FROM Tree s WHERE s.p_id=t.id)
+        THEN 'Inner'
+        ELSE 'Leaf'
+        END
+    ) AS type
+FROM Tree t

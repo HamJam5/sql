@@ -1,0 +1,163 @@
+SELECT *
+  FROM movie_data.movies
+  WHERE Genre="Comedy"
+
+SELECT *
+  FROM invoices
+  WHERE BillingCountry = "Germany"
+    AND Total > 5
+
+SELECT *
+  FROM movie_data.movies
+  WHERE Genre="Comedy"
+    AND Revenue > 300000000
+  ORDER BY Release_Date DESC
+
+SELECT Name
+  FROM Genres
+  ORDER BY Name
+
+SELECT  *
+  FROM Tracks
+  WHERE Composer = "Chris Cornell"
+  ORDER BY GenreId DESC
+
+SELECT
+  stn,
+
+  date,
+  -- Use the IF function to replace 9999.9 values, which the dataset description explains is the default value when temperature is missing, with NULLs instead.
+       IF(
+        temp=9999.9,
+        NULL,
+        temp) AS temperature,
+
+  -- Use the IF function to replace 999.9 values, which the dataset description explains is the default value when wind speed is missing, with NULLs instead.
+       IF(
+        wdsp="999.9",
+        NULL,
+        CAST(wdsp AS Float64)) AS wind_speed,
+
+  -- Use the IF function to replace 99.99 values, which the dataset description explains is the default value when precipitation is missing, with NULLs instead.
+
+      IF(
+         prcp=99.99,
+         0,
+         prcp) AS precipitation
+  FROM
+    `bigquery-public-data.noaa_gsod.gsod2020`
+  WHERE
+    stn="725030" -- La Guardia
+
+    OR stn="744860" -- JFK
+  ORDER BY
+    date DESC,
+    stn ASC
+
+SELECT AVG(temperature)
+  FROM my-first-project-50418.demos.nyc_weather
+  WHERE date BETWEEN '2020-06-01' AND '2020-06-30'
+
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+SELECT usertype,
+  CONCAT(start_station_name, " to ", end_station_name) AS route,
+  COUNT(*) AS num_trips,
+  ROUND (AVG(CAST(tripduration as INT64) / 60),2) AS duration
+  FROM bigquery-public-data.new_york.citibike_trips
+  GROUP BY start_station_name, end_station_name, usertype
+  ORDER BY num_trips DESC
+  LIMIT 10
+
+  SELECT
+      `bigquery-public-data.world_bank_intl_education.international_education`.country_name,
+      `bigquery-public-data.world_bank_intl_education.country_summary`.country_code,
+      `bigquery-public-data.world_bank_intl_education.international_education`.value
+  FROM
+      `bigquery-public-data.world_bank_intl_education.international_education`
+  INNER JOIN
+      `bigquery-public-data.world_bank_intl_education.country_summary`
+  ON `bigquery-public-data.world_bank_intl_education.country_summary`.country_code = `bigquery-public-data.world_bank_intl_education.international_education`.country_code
+
+
+  SELECT
+      edu.country_name,
+      summary.country_code,
+      edu.value
+  FROM
+      `bigquery-public-data.world_bank_intl_education.international_education` AS edu
+  INNER JOIN
+      `bigquery-public-data.world_bank_intl_education.country_summary` AS summary
+  ON edu.country_code = summary.country_code
+
+SELECT
+    AVG(edu.value) average_value, summary.region
+FROM
+    `bigquery-public-data.world_bank_intl_education.international_education` AS edu
+INNER JOIN
+    `bigquery-public-data.world_bank_intl_education.country_summary` AS summary
+ON edu.country_code = summary.country_code
+WHERE summary.region IS NOT null
+GROUP BY summary.region
+ORDER BY average_value DESC
+
+
+SELECT
+  orders.*,
+  warehouse.warehouse_alias,
+  warehouse.state
+FROM warehouse_orders.orders AS orders
+JOIN warehouse_orders.warehouse AS warehouse
+  ON orders.warehouse_id = warehouse.warehouse_id
+
+SELECT
+    COUNT (DISTINCT warehouse.state) AS num_states
+  FROM warehouse_orders.orders AS orders
+  JOIN warehouse_orders.warehouse AS warehouse
+    ON orders.warehouse_id = warehouse.warehouse_id
+
+SELECT
+    warehouse.state AS state,
+    COUNT (DISTINCT order_id) AS num_orders
+  FROM warehouse_orders.orders AS orders
+  JOIN warehouse_orders.warehouse AS warehouse
+    ON orders.warehouse_id = warehouse.warehouse_id
+  GROUP BY warehouse.state
+
+SELECT  station_id, num_bikes_available,
+    ( SELECT   AVG(num_bikes_available)
+    FROM  bigquery-public-data.new_york.citibike_stations
+  ) AS avg_num_bikes_available
+FROM
+  bigquery-public-data.new_york.citibike_stations
+
+SELECT
+  warehouse.warehouse_id,
+  CONCAT(warehouse.state,": ",warehouse.warehouse_alias) AS warehouse_name,
+  COUNT(orders.order_id) AS num_orders,
+  (
+    SELECT
+    COUNT (*)
+    FROM warehouse_orders.orders AS orders
+  )   AS total_orders,
+  CASE
+    WHEN COUNT(orders.order_id) / (SELECT COUNT(*)
+     FROM warehouse_orders.orders AS orders) <=0.2
+     THEN "fulfilled 0-20% of orders"
+   WHEN COUNT(orders.order_id) / (SELECT COUNT(*)
+    FROM warehouse_orders.orders AS orders) >0.2
+    AND COUNT(orders.order_id) / (SELECT COUNT(*)
+     FROM warehouse_orders.orders AS orders) <=0.6
+     THEN "fulfilled 21-60% of orders"
+    ELSE "fulfilled 61-100% of orders"
+    END AS fulfillment_summary
+FROM
+  warehouse_orders.warehouse AS warehouse
+LEFT JOIN
+  warehouse_orders.orders AS orders
+  ON orders.warehouse_id = warehouse.warehouse_id
+GROUP BY
+  warehouse.warehouse_id,
+  warehouse_name
+HAVING
+  COUNT (order_id) > 0

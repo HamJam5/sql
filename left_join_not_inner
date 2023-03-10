@@ -1,0 +1,10 @@
+SELECT firstName, lastName, city, state
+FROM Person p
+LEFT JOIN Address a ON p.personId=a.personId
+
+/*
+Use INNER JOIN when you want to return only records 
+having pair on both sides, 
+and use LEFT JOIN when you need all records from the “left” table, 
+no matter if they have pair in the “right” table or not.
+/*
